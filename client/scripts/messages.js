@@ -32,5 +32,7 @@ var Messages = {
     message.roomname = message.roomname || '';
     return message;
   }
-  
+
 };
+
+//module.exports.Messages = Messages._data;

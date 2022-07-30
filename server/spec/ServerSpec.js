@@ -91,4 +91,50 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
+  it('Should send back parsable stringified JSON', function() {
+    var req = new stubs.request('/classes/messages', 'OPTIONS');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(JSON.parse.bind(this, res._data)).to.not.throw();
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Should respond with messages that were previously posted', function() {
+    var stubMsg = {
+      username: 'Tobby',
+      text: 'this is hard!'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+
+    // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data);
+    expect(messages.length).to.be.above(0);
+    expect(messages[1].username).to.equal('Tobby');
+    expect(messages[1].text).to.equal('this is hard!');
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Should 404 when asked for a nonexistent file', function() {
+    var req = new stubs.request('/google', 'GET');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(404);
+    expect(res._ended).to.equal(true);
+  });
+
 });

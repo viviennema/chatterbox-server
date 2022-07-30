@@ -12,11 +12,14 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 //const messages = require('../client/scripts/messages.js');
-// const messages = [{"id": 0,
-//   "username": "Tobby",
-//   "text": "this is hard",
-//   "roomname": "lobby" }];
-const messages = [];
+const messages = [{message_id: 0,
+  username: "Jono",
+  text: "Do my bidding!",
+  roomname: "lobby" }, {message_id: 1,
+  username: "Tobby",
+  text: "this is hard!",
+  roomname: "lobby" }];
+//const messages = [];
 
 var getPostMessage = function(body) {
   const {id, username, text, roomname} = JSON.parse(body);
@@ -66,12 +69,11 @@ var requestHandler = function(request, response) {
     response.end(JSON.stringify(messages));
   } else if (request.url === '/classes/messages' && request.method === 'OPTIONS') {
     response.writeHead(200, headers);
-    //headers['Content-Type'] = 'application/json';
     response.end(JSON.stringify(messages));
   } else if (request.url === '/classes/messages' && request.method === 'POST') {
-    response.writeHead(201, headers);
     var body = '';
     request.on('data', (chunk) => {
+      console.log(chunk);
       body += chunk.toString();
     }).on('end', () => {
       var message = getPostMessage(body);
